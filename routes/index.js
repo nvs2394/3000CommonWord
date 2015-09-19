@@ -20,16 +20,19 @@ router.post('/postword', function(req, res) {
 });
 
 router.get('/pronunciation', function(req, res) {
-    console.log('wordlist', wordlist);
-
     var wordsData = [];
     var keyword = req.params.keyword;
-    async.forEach(wordlist.getAll(), function(word, key, callback) {
+    async.forEachOf(wordlist.getAll(), function(word, key, callback) {
         var url = 'http://www.oxforddictionaries.com/definition/english/' + word.name;
         request(url, function(err, response, body) {
-            if (!err && response.statusCode == 200) {
-                var words = {};
+            var words = {};
+            var count = 0;
+            if (response.statusCode == 404) {
+                count += count;
+                console.log(count);
+            } else if (!err && response.statusCode == 200) {
                 var $ = cheerio.load(body);
+                words.number = key;
                 words.pronunciation = $('.headpron').text();
                 words.sound = $('.sound').attr('data-src-mp3');
                 words.name = word.name;
@@ -46,17 +49,21 @@ router.get('/pronunciation', function(req, res) {
                         'moreInformation': moreInformation
                     });
                 });
-                words.data = jsdata;
-                wordsData.push(words);
-
-                if (wordsData.length === (wordlist.getLength() - 1)) {
-                    callback(wordsData);
-                }
+            }
+            words.data = jsdata;
+            wordsData.push(words);
+            console.log('length of word data' + wordsData.length);
+            console.log('length of word list' + wordlist.getLength());
+            if (wordsData.length === (wordlist.getLength() - count)) {
+                callback(wordsData);
             }
         });
     }, function(results) {
-        console.log(results);
+        console.log('in');
+        writeJSONFile(results);
+        console.log('out');
     });
+    return res.jsonp('words info');
 });
 
 var writeJSONFile = function(data) {
