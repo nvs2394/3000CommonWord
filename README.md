@@ -1,8 +1,12 @@
-# English3000Server
-server using nodejs (express framework)
-//Start server
-node ./bin/www
+### Oxford3000Crawler
+Crawling data for English3000
 
-//GET info of word
-method: GET
-URL : http://localhost:3000/pronunciation
+### Install
+
+```sh
+$ npm install
+$ node app.js
+```
+
+### Usage
+Start crawler by access to this http://localhost:3000/pronunciation

@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var request = require('request');
 var cheerio = require('cheerio');
-var wordlist = require('3000-words-list');
+var wordlist = require('english3kdata');
 var lodash = require('lodash');
 var async = require('async');
 var fs = require('fs');
@@ -17,9 +17,11 @@ router.get('/', function(req, res, next) {
 router.post('/postword', function(req, res) {
     var word = req.body.key;
     console.log(word);
-})
+});
 
 router.get('/pronunciation', function(req, res) {
+    console.log('wordlist', wordlist);
+
     var wordsData = [];
     var keyword = req.params.keyword;
     async.forEach(wordlist.getAll(), function(word, key, callback) {
@@ -54,7 +56,7 @@ router.get('/pronunciation', function(req, res) {
         });
     }, function(results) {
         console.log(results);
-    })
+    });
 });
 
 var writeJSONFile = function(data) {
